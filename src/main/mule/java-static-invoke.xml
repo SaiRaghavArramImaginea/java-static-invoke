@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cabf45e3-2a28-4fea-bd11-eabef1cfaaf0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="java-static-invokeFlow" doc:id="8b1f42cf-f5d3-4ca6-b2a9-547ecbcbf15c" >
+		<http:listener doc:name="Listener" doc:id="8a8d7018-bfca-4156-903f-e01bc7935cd9" config-ref="HTTP_Listener_config" path="/calculator"/>
+		<choice doc:name="Choice" doc:id="265dd5b6-608c-4f80-9dd4-8c9613153077">
+			<when expression='#[attributes.queryParams.operation == "add"]'>
+				<java:invoke-static method="add(int,int)" doc:name="Invoke static" doc:id="d81aec2e-95ef-4de7-8592-dc5632dbc661" class="com.pramati.calculatorservice.CalcService" >
+					<java:args ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+  a: attributes.queryParams.a,
+  b: attributes.queryParams.b
+}]]]></java:args>
+				</java:invoke-static>
+			</when>
+			<when expression='#[attributes.queryParams.operation == "divide"]'>
+				<java:invoke-static method="divide(int,int)" doc:name="Invoke static" doc:id="104f99d7-f3ac-4041-9b31-4ed22f63baf2" class="com.pramati.calculatorservice.CalcService">
+					<java:args><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+  a: attributes.queryParams.a,
+  b: attributes.queryParams.b
+}]]]></java:args>
+				</java:invoke-static>
+			</when>
+			<when expression='#[attributes.queryParams.operation == "multiply"]'>
+				<java:invoke-static method="mulitply(int,int)" doc:name="Invoke static" doc:id="caf01182-68fd-4ad0-b604-63603a37cbdc" class="com.pramati.calculatorservice.CalcService">
+					<java:args><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+  a: attributes.queryParams.a,
+  b: attributes.queryParams.b
+}]]]></java:args>
+				</java:invoke-static>
+			</when>
+			<when expression='#[attributes.queryParams.operation == "sub"]' >
+				<java:invoke-static method="sub(int,int)" doc:name="Invoke static" doc:id="bf0b4470-509c-434e-a5ce-16cb58e58dc0" class="com.pramati.calculatorservice.CalcService">
+					<java:args><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+  a: attributes.queryParams.a,
+  b: attributes.queryParams.b
+}]]]></java:args>
+				</java:invoke-static>
+			</when>
+			
+			
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="ffb41d71-5212-4668-a3bd-59d4ff4e86e5">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	result: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
